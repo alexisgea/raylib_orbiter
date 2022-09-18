@@ -7,12 +7,16 @@
 #define GLSL_VERSION 330
 
 
+void UpdateWindow(int *screenWidth, int *screenHeight);
+
+
 int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    int screenWidth = 800;
+    int screenHeight = 450;
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT); //  | FLAG_VSYNC_HINT     FLAG_WINDOW_ALWAYS_RUN
     InitWindow(screenWidth, screenHeight, "orbiter");
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
 
@@ -28,6 +32,7 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
+        UpdateWindow(&screenWidth, &screenHeight);
         UpdateCameraCustom(&camera);
 
 
@@ -63,4 +68,33 @@ int main(void)
     CloseWindow();
 
     return 0;
+}
+
+
+void UpdateWindow(int *screenWidth, int *screenHeight) {
+    // window resizing
+    if (IsWindowResized() && !IsWindowMaximized() && !IsWindowFullscreen())
+    {
+        *screenWidth = GetScreenWidth();
+        *screenHeight = GetScreenHeight();
+    }
+
+    // check for alt + enter
+    if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
+    {
+
+        if(IsWindowMaximized()) {
+            RestoreWindow();
+            ClearWindowState(FLAG_WINDOW_UNDECORATED);
+        }
+        else {
+            SetWindowState(FLAG_WINDOW_UNDECORATED);
+            MaximizeWindow();
+            
+            // see what display we are on right now
+ 			int display = GetCurrentMonitor();
+            SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+            
+        }
+    }
 }
