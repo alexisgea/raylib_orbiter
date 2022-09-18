@@ -32,8 +32,9 @@ static Model InitSkybox(int GLSL_VERSION) {
 
     bool doGamma = false;
     bool vflipped = true;
-    float alpha = 0.6;
-    int finalSize = 2048;
+    // TODO Change alpha to just a darkening value
+    float alpha = 0.6; // transparency of the main texture (so over black it becomes darker)
+    int finalSize = 2048; // Size of each face I think
     
     SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]){ MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
     SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]) { doGamma ? 1 : 0 }, SHADER_UNIFORM_INT);
@@ -63,6 +64,7 @@ static Model InitSkybox(int GLSL_VERSION) {
         skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, finalSize, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 
         UnloadTexture(panorama);    // Texture not required anymore, cubemap already generated
+        UnloadShader(shdrCubemap);
     }
 
     return skybox;
