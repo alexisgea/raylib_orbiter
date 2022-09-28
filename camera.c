@@ -21,6 +21,8 @@ Camera3D InitCamera(Vector3 focusPosition) {
 
 
 void UpdateCameraCustom(Camera3D *camera) {
+    // TODO smoothing movement with a target coord and smooth movement
+
     // constants
     const Vector3 VERT_AXIS = (Vector3){0.0f, 1.0f, 0.0f};
     const float ROTATION_SPEED = 0.01f;

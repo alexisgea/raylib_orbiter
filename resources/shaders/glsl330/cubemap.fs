@@ -12,6 +12,10 @@ out vec4 finalColor;
 
 vec2 SampleSphericalMap(vec3 v)
 {
+    // Note: increasing the number of decimal is important to avoid artifacts on the seam (where it get cuts off a bit)
+    // 0.1591 = 1/6.28319(=>2PI) = 360 degrees in radians
+    // 0.3183 = 1/3.14159(=>PI) = 180 degrees in radians
+
     vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
     uv *= vec2(0.15915494309, 0.31830988618); // vec2(0.1591, 0.3183)
     uv += 0.5;
