@@ -3,14 +3,14 @@
 #include "raymath.h"
 #include "rlgl.h"
 
-static void DrawSkybox();
-static Model InitSkybox(int GLSL_VERSION);
+void DrawSkybox();
+Model InitSkybox(int GLSL_VERSION);
 // Generate cubemap (6 faces) from equirectangular (panorama) texture
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);
+TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);
 
 
 
-static void DrawSkybox(Model skybox) {
+void DrawSkybox(Model skybox) {
     // We are inside the cube, we need to disable backface culling!
     rlDisableBackfaceCulling();
     rlDisableDepthMask();
@@ -20,7 +20,7 @@ static void DrawSkybox(Model skybox) {
 }
 
 
-static Model InitSkybox(int GLSL_VERSION) {
+Model InitSkybox(int GLSL_VERSION) {
     // Load skybox model
     Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
     Model skybox = LoadModelFromMesh(cube);
@@ -72,7 +72,7 @@ static Model InitSkybox(int GLSL_VERSION) {
 
 
 // Generate cubemap texture from HDR texture
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)
+TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)
 {
     TextureCubemap cubemap = { 0 };
 
