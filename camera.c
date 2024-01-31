@@ -65,6 +65,7 @@ void UpdateCameraCustom(Camera3D *camera) {
     if(finalDist <= 0) finalDist = 0.001; // maybe better to setup a very small value
     camDir = Vector3Normalize(camDir);
 
+    // rotate direction of camera by the mouse move values -> TODO smooth with a target value
     Vector3 rightAxis = Vector3CrossProduct(VERT_AXIS, Vector3Negate(camDir));
     Quaternion quat1 = QuaternionFromAxisAngle(VERT_AXIS, -mouseDelta.x * ROTATION_SPEED);
 

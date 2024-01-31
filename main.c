@@ -89,11 +89,11 @@ int main(void)
     //--------------------------------------------------------------------------------------
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
-    UnloadModel(skybox);        // Unload skybox model
+    UnloadModel(skybox);
 
-    UnloadModel(model);      // Unload the model
-    UnloadShader(model.materials[0].shader);      // Unload the model
-    UnloadShader(lightShader);   // Unload shader
+    UnloadShader(model.materials[0].shader);
+    UnloadModel(model);
+    // UnloadShader(lightShader);
 
     CloseWindow();
 
