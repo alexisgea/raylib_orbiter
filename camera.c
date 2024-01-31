@@ -14,7 +14,7 @@ Camera3D InitCamera(Vector3 focusPosition) {
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
 
-    SetCameraMode(camera, CAMERA_CUSTOM); // Set a free camera mode
+    // SetCameraMode(camera, CAMERA_CUSTOM); // Set a free camera mode
 
     return camera;
 }
@@ -46,14 +46,13 @@ void UpdateCameraCustom(Camera3D *camera) {
     }
 
 
-    // TODO This part should replaced by a universal scale eventually
-
+    // calculate look direction of camera in world coordiantes
     Vector3 camPos = camera->position;
     Vector3 camFocus = camera->target;
-    Vector3 camDir = Vector3Subtract(camPos, camFocus);
-    float dist = Vector3Length(camDir);
-    camDir = Vector3Normalize(camDir);
+    Vector3 camToFocus = Vector3Subtract(camPos, camFocus);
+    Vector3 camDir = Vector3Normalize(camToFocus);
 
+    // rotate direction of camera by the mouse move values -> TODO smooth with a target value
     Vector3 rightAxis = Vector3CrossProduct(VERT_AXIS, Vector3Negate(camDir));
     Quaternion quat1 = QuaternionFromAxisAngle(VERT_AXIS, -mouseDelta.x * ROTATION_SPEED);
     Quaternion quat2 = QuaternionFromAxisAngle(rightAxis, mouseDelta.y * ROTATION_SPEED);
@@ -61,7 +60,12 @@ void UpdateCameraCustom(Camera3D *camera) {
 
     Vector3 rotatedDir = Vector3RotateByQuaternion(camDir, quat);
 
-    Vector3 newPos = Vector3Scale(rotatedDir, dist + wheelVal * ZOOM_SPEED);
+    // TODO This part should replaced by a universal scale eventually
+    // calcualte distance to the focus object with the new mouse scroll value -> TODO smooth as well
+    float distanceToFocus = Vector3Length(camToFocus) + wheelVal * ZOOM_SPEED;
+
+    // update new camera position
+    Vector3 newPos = Vector3Scale(rotatedDir, distanceToFocus);
     camera->position = Vector3Add(newPos, camFocus);
 }
 
