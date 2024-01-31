@@ -4,6 +4,15 @@
 Camera3D InitCamera(Vector3);
 void UpdateCameraCustom(Camera3D *camera);
 
+struct CameraState {
+    Camera3D camera;
+
+    Vector3 position;       // Camera position
+    Vector3 target;         // Camera target it looks-at
+    Vector3 up;             // Camera up vector (rotation over its axis)
+    float fovy;             // Camera field-of-view aperture in Y (degrees) in perspective, used as near plane width in orthographic
+};
+
 
 Camera3D InitCamera(Vector3 focusPosition) {
     // Define the camera to look into our 3d world
@@ -53,7 +62,7 @@ void UpdateCameraCustom(Camera3D *camera) {
     Vector3 camDir = Vector3Subtract(camPos, camFocus);
     float dist = Vector3Length(camDir);
     float finalDist = dist + wheelVal * ZOOM_SPEED;
-    if(finalDist < 0) finalDist = 0; // maybe better to setup a very small value
+    if(finalDist <= 0) finalDist = 0.001; // maybe better to setup a very small value
     camDir = Vector3Normalize(camDir);
 
     Vector3 rightAxis = Vector3CrossProduct(VERT_AXIS, Vector3Negate(camDir));
