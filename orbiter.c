@@ -67,15 +67,21 @@ int main(void)
 
                 DrawSkybox(skybox);
 
-                // DrawCube(focusPosition, 2.0f, 2.0f, 2.0f, RED);
+                // Draw Planet
                 DrawModel(model, Vector3Zero(), 1.0f, WHITE);
-                // DrawCubeWires(focusPosition, 2.0f, 2.0f, 2.0f, MAROON);
-                // DrawGrid(10, 1.0f);
 
-                // DrawSphereEx(light.position, 0.2f, 8, 8, light.color);
+                // draw star
                 DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
 
+                // draw orbit
+                // DrawLine3D();
+
+                // draw state vectors
+                // DrawLine3D();
+                
             EndMode3D();
+
+            // draw imgui ui widgets?
 
             // debut texts
             // DrawText("EARTH ORBITING AROUND THE SUN!", 10, 10, 10, DARKGRAY);
