@@ -4,6 +4,15 @@
 Camera3D InitCamera(Vector3);
 void UpdateCameraCustom(Camera3D *camera);
 
+struct CameraState {
+    Camera3D camera;
+
+    Vector3 position;       // Camera position
+    Vector3 target;         // Camera target it looks-at
+    Vector3 up;             // Camera up vector (rotation over its axis)
+    float fovy;             // Camera field-of-view aperture in Y (degrees) in perspective, used as near plane width in orthographic
+};
+
 
 Camera3D InitCamera(Vector3 focusPosition) {
     // Define the camera to look into our 3d world
@@ -28,6 +37,7 @@ void UpdateCameraCustom(Camera3D *camera) {
     const float ROTATION_SPEED = 0.01f;
     const float ZOOM_SPEED = 1.0f;
 
+
     // inputs
     // float detalTime = GetFrameTime();
     float wheelVal = GetMouseWheelMove();
@@ -46,26 +56,39 @@ void UpdateCameraCustom(Camera3D *camera) {
     }
 
 
-    // calculate look direction of camera in world coordiantes
+    // TODO This part should replaced by a universal scale eventually
     Vector3 camPos = camera->position;
     Vector3 camFocus = camera->target;
-    Vector3 camToFocus = Vector3Subtract(camPos, camFocus);
-    Vector3 camDir = Vector3Normalize(camToFocus);
+    Vector3 camDir = Vector3Subtract(camPos, camFocus);
+    float dist = Vector3Length(camDir);
+    float finalDist = dist + wheelVal * ZOOM_SPEED;
+    if(finalDist <= 0) finalDist = 0.001; // maybe better to setup a very small value
+    camDir = Vector3Normalize(camDir);
 
     // rotate direction of camera by the mouse move values -> TODO smooth with a target value
     Vector3 rightAxis = Vector3CrossProduct(VERT_AXIS, Vector3Negate(camDir));
     Quaternion quat1 = QuaternionFromAxisAngle(VERT_AXIS, -mouseDelta.x * ROTATION_SPEED);
+
+    // NOTE need to clamp this rotatino so it doesn't flip the vector once vertical
     Quaternion quat2 = QuaternionFromAxisAngle(rightAxis, mouseDelta.y * ROTATION_SPEED);
     Quaternion quat = QuaternionMultiply(quat1, quat2);
 
     Vector3 rotatedDir = Vector3RotateByQuaternion(camDir, quat);
+    Vector3 finalDir = rotatedDir;
 
-    // TODO This part should replaced by a universal scale eventually
-    // calcualte distance to the focus object with the new mouse scroll value -> TODO smooth as well
-    float distanceToFocus = Vector3Length(camToFocus) + wheelVal * ZOOM_SPEED;
+    DrawText(TextFormat("cam dir: x:%02.02f y:%02.02f z:%02.02f", rotatedDir.x, rotatedDir.y, rotatedDir.z), 10, 40, 20, WHITE);
 
-    // update new camera position
-    Vector3 newPos = Vector3Scale(rotatedDir, distanceToFocus);
+    // if we had a close to 180 flip, then we want to cancel it
+    Vector3 newRightAxis = Vector3CrossProduct(VERT_AXIS, Vector3Negate(rotatedDir));
+    float dotProd = Vector3DotProduct(rightAxis, newRightAxis);
+    // note: it would be better to set the new direction to exactly vertical 
+    if(dotProd < 0) finalDir = camDir;
+    // if(dotProd < 0) {
+    //     finalDir = camDir.y < 0 ? Vector3Negate(VERT_AXIS) : VERT_AXIS; // set axis to up or down to avoid flipping
+    // }
+    // DrawText(TextFormat("dot prod: %02.02f", dotProd), 10, 60, 20, WHITE);
+
+    Vector3 newPos = Vector3Scale(finalDir, finalDist);
     camera->position = Vector3Add(newPos, camFocus);
 }
 
