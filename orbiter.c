@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "camera.c"
 #include "skybox.c"
+#include "isphere.c"
 
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
@@ -24,19 +25,18 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "orbiter");
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
 
-
     Vector3 focusPosition = { 0.0f, 0.0f, 0.0f };
     Camera3D camera = InitCamera(focusPosition);
     Model skybox = InitSkybox(GLSL_VERSION);
 
+    // Load model from a generated mesh
+    // Model sphere = LoadModelFromMesh(GenMeshSphere(1.0f, 20, 20));
+    Model sphere = LoadModelFromMesh(GenIcosphereMesh(2));
 
-    // Load cube model from a generated mesh
-    Model model = LoadModelFromMesh(GenMeshSphere(1.0f, 20, 20));
-    // Model model = LoadModelFromMesh(GenMeshCube(2.0f, 2.0f, 2.0f));
     // create and initialise basic light shader
     Shader lightShader = CreateLightShader(GLSL_VERSION);
     // Assign out lighting shader to model
-    model.materials[0].shader = lightShader;
+    sphere.materials[0].shader = lightShader;
     // Create lights
     Light light = CreateLight(LIGHT_POINT, (Vector3){ 10, 2, 10 }, Vector3Zero(), YELLOW, lightShader);
     // light.enabled = true;
@@ -68,7 +68,7 @@ int main(void)
                 DrawSkybox(skybox);
 
                 // Draw Planet
-                DrawModel(model, Vector3Zero(), 1.0f, WHITE);
+                DrawModel(sphere, Vector3Zero(), 1.0f, WHITE);
 
                 // draw star
                 DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
@@ -97,8 +97,8 @@ int main(void)
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
     UnloadModel(skybox);
 
-    UnloadShader(model.materials[0].shader);
-    UnloadModel(model);
+    UnloadShader(sphere.materials[0].shader);
+    UnloadModel(sphere);
     // UnloadShader(lightShader);
 
     CloseWindow();
