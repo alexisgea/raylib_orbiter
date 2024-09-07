@@ -1,19 +1,30 @@
 // To compile use the following command: gcc main.c -lraylib -lopengl32 -lgdi32 -lwinmm -o orbiter.exe
-
-#include "raylib.h"
+#include <raylib.h>
 #include "camera.c"
 #include "skybox.c"
 #include "isphere.c"
+
+// #include "stdlib.h"
+// #include "math.h"
 
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 
 #define GLSL_VERSION 330
 
+typedef struct WorldState {
+    double inverseScale;
+    double scale;
+    Vector3 center;
+} WorldState;
+
 // Method declaration
 //--------------------------------------------------------------------------------------
 void UpdateWindow(int *screenWidth, int *screenHeight);
 
+const bool USE_SCALE_ZOOM = true;
+const float SCALE_ZOOM_SPEED = 1.0f;
+const double MINIMUM_SCALE = 0.001;
 
 int main(void)
 {
@@ -24,14 +35,13 @@ int main(void)
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT); //  | FLAG_VSYNC_HINT     FLAG_WINDOW_ALWAYS_RUN
     InitWindow(screenWidth, screenHeight, "orbiter");
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
-
-    Vector3 focusPosition = { 0.0f, 0.0f, 0.0f };
-    Camera3D camera = InitCamera(focusPosition);
+    WorldState worldState = { .inverseScale = 1.0, .scale = 1.0, .center = Vector3Zero()};
+    CameraState camera = CreateCamera();
     Model skybox = InitSkybox(GLSL_VERSION);
 
     // Load model from a generated mesh
-    // Model sphere = LoadModelFromMesh(GenMeshSphere(1.0f, 20, 20));
-    Model sphere = LoadModelFromMesh(GenIcosphereMesh(2));
+    Model sphere = LoadModelFromMesh(GenMeshSphere(1.0f, 20, 20));
+    // Model sphere = LoadModelFromMesh(GenIcosphereMesh(2));
 
     // create and initialise basic light shader
     Shader lightShader = CreateLightShader(GLSL_VERSION);
@@ -46,14 +56,36 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())       // Detect window close button or ESC key
     {
+        //
+        // inputs
+        //
+
+        // scale OR distance -> wheel scroll (with a bool to set in a config file)
+        // focal length -> mouse wheel click held
+        // orbit rotation -> left click held
+        // look around -> right click held
+        float wheelScroll = GetMouseWheelMove();
+        Vector2 leftPressDelta = IsMouseButtonDown(0) ? GetMouseDelta() : Vector2Zero();
+        Vector2 rightPressDelta = IsMouseButtonDown(1) ? GetMouseDelta() : Vector2Zero();
+        Vector2 wheelPressDelta = IsMouseButtonDown(2) ? GetMouseDelta() : Vector2Zero();
+        // float detalTime = GetFrameTime();
+
         // Update
         //----------------------------------------------------------------------------------
         UpdateWindow(&screenWidth, &screenHeight);
-        UpdateCameraCustom(&camera);
+
+
+        if(USE_SCALE_ZOOM) {
+            worldState.inverseScale -= wheelScroll * SCALE_ZOOM_SPEED;
+            if(worldState.inverseScale < 1.0) worldState.inverseScale = 1.0;
+            worldState.scale = 1.0 / worldState.inverseScale;
+        }
+        float zoomDelta = USE_SCALE_ZOOM ? 0 : wheelScroll;
+        float focalDelta = Vector2Length(wheelPressDelta);
+        UpdateCameraCustom(&camera, leftPressDelta, zoomDelta, rightPressDelta, focalDelta);
 
         // update light shader
-        // TODO is it required if the light doesn't move (only the camera moves?)
-        float cameraPos[3] = { camera.position.x, camera.position.y, camera.position.z };
+        float cameraPos[3] = { camera.current.position.x, camera.current.position.y, camera.current.position.z };
         SetShaderValue(lightShader, lightShader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
         UpdateLightValues(lightShader, light);
 
@@ -63,15 +95,20 @@ int main(void)
         BeginDrawing();
             ClearBackground(BLACK); // RAYWHITE
 
-            BeginMode3D(camera);
+            BeginMode3D(camera.current);
 
                 DrawSkybox(skybox);
 
                 // Draw Planet
-                DrawModel(sphere, Vector3Zero(), 1.0f, WHITE);
+                Vector3 planetScaledPos = Vector3Subtract(Vector3Zero(), worldState.center);
+                planetScaledPos = Vector3Scale(planetScaledPos, worldState.scale);
+                DrawModel(sphere, planetScaledPos, worldState.scale, WHITE);
 
                 // draw star
-                DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
+                Vector3 starScaledPos = Vector3Subtract(light.position, worldState.center);
+                starScaledPos = Vector3Scale(starScaledPos, worldState.scale);
+                float starRadius = 0.2f * worldState.scale;
+                DrawSphereWires(starScaledPos, starRadius, 8, 8, ColorAlpha(light.color, 0.3f));
 
                 // draw orbit
                 // DrawLine3D();

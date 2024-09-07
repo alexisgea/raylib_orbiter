@@ -12,7 +12,10 @@
 			"stdio.h": "c",
 			"*.m": "c",
 			"algorithm": "c",
-			"string_view": "c"
-		}
+			"string_view": "c",
+			"rlights.h": "c",
+			"raymath.h": "c"
+		},
+		"makefile.configureOnOpen": false
 	}
 }

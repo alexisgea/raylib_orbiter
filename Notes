@@ -1,20 +1,22 @@
 # TODO notes
 
 Camera
-
-- smooth zoom in / out
-- add option to use scale instead of zoom -> specific to this types of space projects
-- smooth rotations
+- add minimum zoom based on currently viewed object (also add maximum value to avoid issue)
+- add focal change control
+- add look around
 - change orbital target on click
 - smooth move to new target
 - externalise camera system to reuse in other project (even if just as a debug  cam)
 
-Dev tools
+done
+- add option to use scale instead of zoom
+- smooth zoom in / out
+- smooth rotations
 
+Dev tools
 - draw spheres
 - draw orbits (lines)
 - draw vectory (lines arrows if possible)
 
 Particles
-
 - draw quads looking at cam at all time -> anything particles

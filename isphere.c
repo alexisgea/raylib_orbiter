@@ -1,5 +1,5 @@
-#include "raylib.h"
-#include "math.h"
+// #include "raylib.h"
+// #include "math.h"
 
 // PUBLIC
 Mesh GenIcosphereMesh(int subdivision);
@@ -110,14 +110,14 @@ Vector3 GetNormalizedVector3(float x, float y, float z) {
     return (Vector3){x, y, z};
 }
 
-// void SetVertice(int vertId, Vector3 vert, float *vertices, int verticesLength) {
-//     int startIndex = vertId * 3;
-//     if(verticesLength < startIndex + 3) TRACELOG(LOG_ERROR, "MESH: icosphere vertices array too small.");
+void SetVertice(int vertId, Vector3 vert, float *vertices, int verticesLength) {
+    int startIndex = vertId * 3;
+    if(verticesLength < startIndex + 3) TRACELOG(LOG_ERROR, "MESH: icosphere vertices array too small.");
     
-//     vertices[startIndex] = vert.x;
-//     vertices[startIndex + 1] = vert.y;
-//     vertices[startIndex + 2] = vert.z;
-// }
+    vertices[startIndex] = vert.x;
+    vertices[startIndex + 1] = vert.y;
+    vertices[startIndex + 2] = vert.z;
+}
 
 // // create the 12 starting vertices of a icosahedron
 // void CreateStartingVertices(float *vertices, int length) {

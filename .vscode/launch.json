@@ -9,7 +9,6 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/${fileBasenameNoExtension}",
-            // "program": "${workspaceFolder}/main.c",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
