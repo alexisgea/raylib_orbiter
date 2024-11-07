@@ -1,5 +1,15 @@
 # TODO notes
 
+General
+- add texture to sphere
+- implement own sphere mesh algorythm
+- the algorythm stores the events which happen to the planetoid as a sort of timeline, then we generate the image of the size we need on the fly.
+- decide on a the closest altitude possible of any body, either a fixed 500km or something along the line of a distanced based on the radius of the body (so you can get close to asteroids). From that distance, calculate what are the minimum size of feature we can see on the planet at that altitude
+
+planetoid Generation
+- bump map to change the 3d shape of the body (feature higher than a certain nb of km or a certain percentage of radius) -> bigger than mountains, mostly for bumpyness of asteroids and non spherical shapes of some moons
+- elevation map and normal map for all other details
+
 Camera
 - add minimum zoom based on currently viewed object (also add maximum value to avoid issue)
 - add focal change control
