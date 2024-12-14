@@ -8,6 +8,9 @@ const Vector3 VERT_AXIS = (Vector3){0.0f, 1.0f, 0.0f};
 const float ROTATION_SPEED = 0.01f;
 const float DISTANCE_ZOOM_SPEED = 1.0f;
 
+const float ROTATION_LERP_SPEED = 0.5f;
+const float DISTANCE_ZOOM_LERP_SPEED = 0.5f;
+
 typedef struct CameraState {
     Camera3D current;
     Quaternion currentRotation; // last calculated rotation
@@ -96,6 +99,6 @@ void UpdateCameraCustom(CameraState *camera, Vector2 rotationDelta, float viewDi
     // lerp dir
     // set cam based on dist and dir
     Vector3 currentPos = camera->current.position;
-    Vector3 newPosition = Vector3Lerp(currentPos, camera->position, 0.05f);
+    Vector3 newPosition = Vector3Lerp(currentPos, camera->position, ROTATION_LERP_SPEED);
     camera->current.position = Vector3Normalize(newPosition);
 }

@@ -1,3 +1,9 @@
+/*******************************************************************************************
+*
+*
+*
+********************************************************************************************/
+
 // To compile use the following command: gcc main.c -lraylib -lopengl32 -lgdi32 -lwinmm -o orbiter.exe
 #include <raylib.h>
 #include "camera.c"
@@ -6,6 +12,10 @@
 
 // #include "stdlib.h"
 // #include "math.h"
+
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
+#endif
 
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
@@ -24,6 +34,7 @@ void UpdateWindow(int *screenWidth, int *screenHeight);
 
 const bool USE_SCALE_ZOOM = true;
 const float SCALE_ZOOM_SPEED = 1.0f;
+const float SCALE_ZOOM_LERP_SPEED = 1.0f;
 const double MINIMUM_SCALE = 0.001;
 
 int main(void)
@@ -76,6 +87,7 @@ int main(void)
 
 
         if(USE_SCALE_ZOOM) {
+            // TODO Lerp this
             worldState.inverseScale -= wheelScroll * SCALE_ZOOM_SPEED;
             if(worldState.inverseScale < 1.0) worldState.inverseScale = 1.0;
             worldState.scale = 1.0 / worldState.inverseScale;
