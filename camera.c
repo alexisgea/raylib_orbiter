@@ -43,13 +43,9 @@ CameraState CreateCamera() {
     return camera;
 }
 
-void UpdateCameraCustom(CameraState *camera, Vector2 rotationDelta, float zoomDelta, Vector2 looAroundDelta, float focalDelta) {
+void UpdateCameraCustom(CameraState *camera, Vector2 rotationDelta, float viewDistanceDelta, Vector2 looAroundDelta, float focalDelta) {
     // TODO split distance update from rotation udpate
     // consider storing quaterion of current camera then lerping quaternion this way we don't have to calculate it each time
-    
-    //
-    // udpate the camera values
-    //
 
     // getting base camera values
     Vector3 cameraPos = camera->position;
@@ -58,8 +54,8 @@ void UpdateCameraCustom(CameraState *camera, Vector2 rotationDelta, float zoomDe
     Vector3 cameraDir = Vector3Normalize(cameraToTarget);
     float distanceToTarget = Vector3Length(cameraToTarget);
 
-    // zoom
-    float finalDistance = distanceToTarget + zoomDelta * DISTANCE_ZOOM_SPEED;
+    // view distance
+    float finalDistance = distanceToTarget + viewDistanceDelta * DISTANCE_ZOOM_SPEED;
     if(finalDistance <= 0) finalDistance = MINIMUM_DIST; // maybe better to setup a very small value
 
     // rotation

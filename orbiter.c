@@ -80,9 +80,9 @@ int main(void)
             if(worldState.inverseScale < 1.0) worldState.inverseScale = 1.0;
             worldState.scale = 1.0 / worldState.inverseScale;
         }
-        float zoomDelta = USE_SCALE_ZOOM ? 0 : wheelScroll;
+        float viewDistanceDelta = USE_SCALE_ZOOM ? 0 : wheelScroll;
         float focalDelta = Vector2Length(wheelPressDelta);
-        UpdateCameraCustom(&camera, leftPressDelta, zoomDelta, rightPressDelta, focalDelta);
+        UpdateCameraCustom(&camera, leftPressDelta, viewDistanceDelta, rightPressDelta, focalDelta);
 
         // update light shader
         float cameraPos[3] = { camera.current.position.x, camera.current.position.y, camera.current.position.z };
